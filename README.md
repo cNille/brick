@@ -35,3 +35,8 @@ sudo ./brick run /bin/bash
 
 Voila! You now have a mini container to that is isolated from the filesystem 
 and other processes. You can check that by typing `ps`, but there is a bug with the mounting so you have first to run `mount -t proc proc /proc`
+
+
+## creds
+
+https://www.infoq.com/articles/build-a-container-golang
