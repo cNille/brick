@@ -6,6 +6,7 @@
 *.log
 
 # Binaries for programs and plugins
+brick
 *.exe
 *.exe~
 *.dll
