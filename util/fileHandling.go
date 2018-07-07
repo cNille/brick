@@ -36,12 +36,6 @@ func copy(source, destination string, info os.FileInfo) error {
 // Copy one file from source to destination.
 func fileCopy(source, destination string, info os.FileInfo) error {
 
-	// Ensure destination file doesn't exists
-	_, err := os.Stat(destination)
-	if err == nil {
-		return nil
-	}
-
 	// Create the new file
 	dFile, err := os.Create(destination)
 	if err != nil {
@@ -82,12 +76,16 @@ func directoryCopy(source, destination string, info os.FileInfo) error {
 
 	// Iterate file info and do a copy command.
 	for _, info := range infos {
-		if err := copy(
-			filepath.Join(source, info.Name()),
-			filepath.Join(destination, info.Name()),
-			info,
-		); err != nil {
-			return err
+		if info.Name() != "/srv" {
+			if err := copy(
+				filepath.Join(source, info.Name()),
+				filepath.Join(destination, info.Name()),
+				info,
+			); err != nil {
+				return err
+			}
+		} else {
+			fmt.Println("Skipping /srv")
 		}
 	}
 	return nil

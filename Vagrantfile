@@ -64,38 +64,7 @@ Vagrant.configure("2") do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
-  config.vm.provision "shell", inline: <<-SHELL
-    #!/bin/bash
-    set -e
-    VERSION="1.7.1"
-    DFILE="go$VERSION.linux-amd64.tar.gz"
-    if [ -d "$HOME/.go" ] || [ -d "$HOME/go" ]; then
-        echo "Installation directories already exist. Exiting."
-        exit 1
-    fi
-    echo "Downloading $DFILE ..."
-    wget https://storage.googleapis.com/golang/$DFILE -O /tmp/go.tar.gz
-    if [ $? -ne 0 ]; then
-        echo "Download failed! Exiting."
-        exit 1
-    fi
-    echo "Extracting ..."
-    tar -C "$HOME" -xzf /tmp/go.tar.gz
-    mv "$HOME/go" "$HOME/.go"
-    touch "$HOME/.bashrc"
-    {
-        echo '# GoLang'
-        echo 'export GOROOT=$HOME/.go'
-        echo 'export PATH=$PATH:$GOROOT/bin'
-        echo 'export GOPATH=/vagrant'
-        echo 'export PATH=$PATH:$GOPATH/bin'
-    } >> "$HOME/.bashrc"
-    export GOROOT=$HOME/.go
-    export PATH=$PATH:$GOROOT/bin
-    export GOPATH=/vagrant
-    export PATH=$PATH:$GOPATH/bin
-    rm -f /tmp/go.tar.gz
-  SHELL
+  config.vm.provision :shell, :path => "provision.sh", privileged: false
 
 
 end

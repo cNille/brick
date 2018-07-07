@@ -4,15 +4,16 @@ import (
 	"fmt"
 	"github.com/cNille/brick/util"
 	"os"
+	"os/exec"
 )
 
 var (
-	workDirectory = "/srv/brick/"
-	OriginJail    = workDirectory + "/jail"
-	bin           = "/bin"
-	lib           = "/lib"
-	lib64         = "/lib64"
-	proc          = "/proc"
+	workDirectory        = "/vagrant"
+	originRootFileSystem = "/vagrant/data/rootfs.tar.gz"
+	nodetar              = "/vagrant/data/node-v8.11.3-linux-x64.tar.xz"
+	brickHome            = "/srv/brick"
+	nodejs               = "/srv/brick/rootfs/usr/local/lib"
+	OriginJail           = "/srv/brick/rootfs"
 )
 
 func checkInit() bool {
@@ -27,34 +28,39 @@ func initBrickStructure() {
 
 	// Create a work directory for brick
 	util.EnsureDir(workDirectory)
+	util.EnsureDir(brickHome)
 
-	// Create a dir for the original jail
-	// A jail is a folder with own binaries and lib.
+	// Create a dir for a jail with rootfilesystem.
 	// A process can be isolated in the folder with Chroot.
-	util.EnsureDir(OriginJail)
-	util.EnsureDir(OriginJail + proc)
+	if _, err := os.Stat(OriginJail); os.IsNotExist(err) {
+		fmt.Println("Unzip ubuntu")
+		cmd := exec.Command("tar", "-zxf", originRootFileSystem, "--directory", brickHome)
+		cmd.Run()
+	}
 
-	// Copy necessary binaries for the jail-template.
-	err := util.Copy(bin, OriginJail+bin)
+	err := util.Copy(workDirectory+"/data/install_node.sh", OriginJail+"/install_node.sh")
 	if err != nil {
-		fmt.Printf("ERROR: unable to create bin. \n")
 		fmt.Println(err)
 		return
 	}
 
-	err = util.Copy(lib, OriginJail+lib)
+	// install node
+	fmt.Println("Unzip nodejs")
+	cmd := exec.Command("tar", "-xf", nodetar, "--directory", nodejs)
+	err = cmd.Run()
 	if err != nil {
-		fmt.Printf("ERROR: unable to create lib \n")
+		fmt.Println("Unable to unzip nodejs...")
 		fmt.Println(err)
 		return
 	}
 
-	err = util.Copy(lib64, OriginJail+lib64)
-	if err != nil {
-		fmt.Printf("ERROR: unable to create lib64 \n")
-		fmt.Println(err)
-		return
-	}
+	// mv node folder
+	cmd = exec.Command("mv", nodejs+"/node-v8.11.3-linux-x64", nodejs+"/node-v8.11.3")
+	cmd.Run()
 
-	fmt.Printf("Done!")
+	// mv profile with node export
+	cmd = exec.Command("cp", workDirectory+"/data/.profile", OriginJail)
+	cmd.Run()
+
+	fmt.Printf("Done!\n")
 }
