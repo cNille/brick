@@ -58,7 +58,3 @@ func initBrickStructure() {
 
 	fmt.Printf("Done!")
 }
-
-func createJail() {
-
-}
