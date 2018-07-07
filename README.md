@@ -36,7 +36,13 @@ sudo ./brick run /bin/bash
 Voila! You now have a mini container to that is isolated from the filesystem 
 and other processes. You can check that by typing `ps`, but there is a bug with the mounting so you have first to run `mount -t proc proc /proc`
 
+### LFS
+
+A rootfs-zip file is uploaded to github-lfs. Install by following instructions
+at: `https://git-lfs.github.com./`
+
 
 ## creds
 
 https://www.infoq.com/articles/build-a-container-golang
+https://github.com/lizrice/containers-from-scratch/blob/master/main.go
