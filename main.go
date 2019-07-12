@@ -66,6 +66,7 @@ func child() {
 	syscall.Chroot(OriginJail)
 	syscall.Chdir("/")
 	syscall.Mount("proc", "proc", "proc", 0, "")
+	syscall.Mount("dev", "dev", "dev", 0, "")
 	defer syscall.Unmount("proc", 0)
 
 	cmd.Run()
